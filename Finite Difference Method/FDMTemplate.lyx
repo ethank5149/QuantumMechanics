@@ -1,0 +1,315 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\begin_modules
+customHeadersFooters
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\series bold
+Schrodinger Equation
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+Finite Difference Method
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+
+\series bold
+Ethan Knox
+\end_layout
+
+\begin_layout Date
+November 12, 2020
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0ex"
+width "85col%"
+height "0.5pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Center Header
+Finite Difference Method 
+\end_layout
+
+\begin_layout Left Header
+
+\series bold
+Ethan Knox
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series default
+Hamiltonian:
+\begin_inset Formula 
+\[
+\hat{H}\psi=-\frac{\hbar^{2}}{2m}\frac{\partial^{2}\psi}{\partial r^{2}}+V\left(r\right)\psi
+\]
+
+\end_inset
+
+Second Order Difference:
+\begin_inset Formula 
+\[
+\frac{\partial^{2}\psi}{\partial r^{2}}\rightarrow\frac{\psi_{i+1}-2\psi_{i}+\psi_{i-1}}{\delta^{2}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $r=r_{0}+i\delta$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+Therefore:
+\begin_inset Formula 
+\[
+H=-\frac{\hbar^{2}}{2m}\left(\frac{\psi_{i+1}-2\psi_{i}+\psi_{i-1}}{\delta^{2}}\right)+V\left(r_{0}+i\delta\right)\psi_{i}
+\]
+
+\end_inset
+
+Define 
+\begin_inset Formula $\alpha=\frac{\hbar^{2}}{2m\delta^{2}}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+H=-\alpha\psi_{i-1}+\left(2\alpha+V\left(r_{0}+i\delta\right)\right)\psi_{i}-\alpha\psi_{i+1}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0ex"
+width "50text%"
+height "0.5pt"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Infinite Square Well (
+\begin_inset Formula $0\leq x\leq L$
+\end_inset
+
+):
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\delta=\frac{L}{N}$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha=\frac{\hbar^{2}N^{2}}{2mL^{2}}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+H=-\alpha\psi_{i-1}+2\alpha\psi_{i}-\alpha\psi_{i+1}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-\alpha H=\psi_{i-1}-2\psi_{i}+\psi_{i+1}
+\]
+
+\end_inset
+
+Where energies are now measured in units of: 
+\begin_inset Formula $-\frac{2mL^{2}}{\hbar^{2}N^{2}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P^{'}\left(r\right)=-\frac{4\pi}{3}G\rho^{2}re^{-\frac{r^{2}}{a^{2}}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P\left(r\right)=-\frac{4\pi}{3}G\rho^{2}\int_{0}^{r}re^{-\frac{r^{2}}{a^{2}}}dr=-\frac{4\pi}{3}G\rho^{2}\int_{0}^{\frac{r^{2}}{a^{2}}}\frac{a^{2}}{2}e^{-u}du=\frac{2\pi G\rho^{2}a^{2}}{3}\left(e^{-\frac{r^{2}}{a^{2}}}-1\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E=\int_{0}^{R}4\pi r^{3}P^{'}\left(r\right)dr
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E=4\pi\left(\left[r^{3}P\left(r\right)\right]_{0}^{R}-\int_{0}^{R}3r^{2}P\left(r\right)dr\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E=4\pi\left(R^{3}\frac{2\pi G\rho^{2}a^{2}}{3}\left(e^{-\frac{R^{2}}{a^{2}}}-1\right)-3\int_{0}^{R}r^{2}\frac{2\pi G\rho^{2}a^{2}}{3}\left(e^{-\frac{r^{2}}{a^{2}}}-1\right)dr\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
