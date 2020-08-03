@@ -1,0 +1,4 @@
+C:\Users\ethan\source\repos\Quantum-Mechanics\Release\Quantum-Mechanics.vcxproj.CopyComplete
+C:\Users\ethan\source\repos\Quantum-Mechanics\Release\Quantum-Mechanics.exe
+C:\Users\ethan\source\repos\Quantum-Mechanics\Release\gsl.dll
+C:\Users\ethan\source\repos\Quantum-Mechanics\Release\gslcblas.dll

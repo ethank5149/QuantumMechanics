@@ -1,0 +1,7 @@
+﻿  Using triplet "x86-windows" from "C:\vcpkg\installed\x86-windows\"
+  Quantum-Mechanics.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 145 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Quantum-Mechanics.vcxproj -> C:\Users\ethan\source\repos\Quantum-Mechanics\Release\Quantum-Mechanics.exe
