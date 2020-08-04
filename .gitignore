@@ -1,2 +1,4 @@
 *.lyx~
 /.ipynb_checkpoints
+*.db
+*.ipch
