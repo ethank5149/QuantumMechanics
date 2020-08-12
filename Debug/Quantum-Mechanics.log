@@ -1,3 +1,6 @@
 ﻿  Using triplet "x86-windows" from "C:\vcpkg\installed\x86-windows\"
+  determine_domain_from_potential.cpp
   Quantum-Mechanics.cpp
-  Quantum-Mechanics.vcxproj -> C:\Users\ethan\source\repos\Quantum-Mechanics\Debug\Quantum-Mechanics.exe
+C:\vcpkg\installed\x86-windows\include\matplotlibcpp.h(663,55): warning C4244: 'argument': conversion from 'const double' to 'long', possible loss of data
+  Generating Code...
+LINK : fatal error LNK1104: cannot open file 'python37_d.lib'

@@ -5,89 +5,58 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <iomanip>
+#include <functional>
 
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_odeiv2.h>
-#include <gsl/gsl_spline.h>
-#include <gsl/gsl_integration.h>
 #include <boost/program_options.hpp>
+#include <boost/numeric/odeint.hpp>
+#include <boost/math/interpolators/cubic_hermite.hpp>
+#include <boost/math/quadrature/trapezoidal.hpp>
 
+#include <gsl/gsl_const_mksa.h>
+
+#include "Quantum-Potentials.h"
+#include "determine_domain_from_potential.h"
+
+using namespace std::placeholders;
 namespace opt = boost::program_options;
 
-struct Params {
-    const double m = 1.0;
-    const double k = 1.0;
-    const double hbar = 1.0;
-    double E{};
-    double (Params::* V)(double) {};
-    double (Params::* dV)(double) {};
+typedef std::vector<double> state_t;
+typedef boost::numeric::odeint::runge_kutta_fehlberg78<state_t> stepper_rkf78_t;
+typedef boost::numeric::odeint::runge_kutta4<state_t> rk4;
 
-    double omega{};
 
-    Params(double input_E) {
-        E = input_E;
-        omega = sqrt(k / m);
+void assign_potential(std::function<double(double)> &V, std::function<double(double)> &dV, std::string Vfunc) {
+    if (Vfunc == "QHO") {
+        V = std::bind(quantum_harmonic_oscillator, _1, m, omega);
+        dV = std::bind(d_quantum_harmonic_oscillator, _1, m, omega);
     }
-
-    double qho(double x) { return 0.5 * m * pow(omega * x, 2.0); }
-    double d_qho(double x) { return m * pow(omega, 2.0) * x; }
-
-    double isw(double x) { return 0.0; }
-    double d_isw(double x) { return 0.0; }
-};
-
-
-int tise(double x, const double psi[], double dpsi_dx[], void* params)
-{
-    struct Params* p = (Params*)params;
-
-    dpsi_dx[0] = psi[1];
-    dpsi_dx[1] = (2.0 * p->m / pow(p->hbar, 2.0)) * ((p->*(p->V))(x) - p->E) * psi[0];
-
-    return GSL_SUCCESS;
-}
-
-
-int jac(double t, const double y[], double* dfdy, double dfdt[], void* params)
-{
-    struct Params* p = (Params*)params;
-
-    gsl_matrix_view dfdy_mat = gsl_matrix_view_array(dfdy, 2, 2);
-    gsl_matrix* mat = &dfdy_mat.matrix;
-
-    gsl_matrix_set(mat, 0, 0, 0.0);
-    gsl_matrix_set(mat, 0, 1, 1.0);
-    gsl_matrix_set(mat, 1, 0, (2.0 * p->m / pow(p->hbar, 2)) * ((p->*(p->V))(t) - p->E));
-    gsl_matrix_set(mat, 1, 1, 0.0);
-
-    dfdt[0] = 0.0;
-    dfdt[1] = (p->*(p->dV))(t);
-
-    return GSL_SUCCESS;
+    else { // Vfunc == "ISW"
+        V = infinite_square_well;
+        dV = d_infinite_square_well;
+    }
 }
 
 
 int main(int argc, const char* argv[])
 {
-    long nsteps;
     double L, psi0, dpsi0, E, h_0, eps_abs, eps_rel;
-    char Vfunc;
+    std::string Vfunc, filename, units;
 
     opt::options_description params("Simulation Parameters");
 
     params.add_options()
         ("help,h", "Show usage")
-        ("nsteps,n", opt::value<long>(&nsteps)->default_value(1000), "Number of descretization steps")
         ("L,l", opt::value<double>(&L)->default_value(10.0), "Characteristic length")
-        ("psi0", opt::value<double>(&psi0)->default_value(0.0), "Initial value")
-        ("dpsi0", opt::value<double>(&dpsi0)->default_value(0.0), "Initial value")
-        ("E,e", opt::value<double>(&E)->default_value(0.5), "Energy")
-        ("V,v", opt::value<char>(&Vfunc)->default_value('Q'), "Potential function")
-        ("h_0,h", opt::value<double>(&h_0)->default_value(1.0e-6), "Initial step size")
-        ("eps_abs", opt::value<double>(&eps_abs)->default_value(1.0e-6), "Allowed absolute error")
+        ("psi0", opt::value<double>(&psi0)->default_value(1.0e-8), "Initial value")
+        ("dpsi0", opt::value<double>(&dpsi0)->default_value(1.0e-8), "Initial value")
+        ("E,e", opt::value<double>(&E)->default_value(6.5), "Energy")
+        ("V,v", opt::value<std::string>(&Vfunc)->default_value("QHO"), "Potential function")
+        ("h_0,h", opt::value<double>(&h_0)->default_value(1.0e-2), "Initial step size")
+        ("eps_abs", opt::value<double>(&eps_abs)->default_value(1.0e-12), "Allowed absolute error")
         ("eps_rel", opt::value<double>(&eps_rel)->default_value(0.0), "Allowed relative error")
+        ("filename,f", opt::value<std::string>(&filename)->default_value("output.dat"), "Output file name")
+        ("units,u", opt::value<std::string>(&units)->default_value("natural"), "Use 'natural' or 'mks' units.")
         ;
 
     opt::variables_map vm;
@@ -100,71 +69,163 @@ int main(int argc, const char* argv[])
     else {
         opt::notify(vm);
 
-        Params p(E);
-        gsl_odeiv2_system sys = { tise, jac, 2, &p };
-        gsl_odeiv2_driver* d = gsl_odeiv2_driver_alloc_y_new(&sys, gsl_odeiv2_step_rkf45, h_0, eps_abs, eps_rel);
+        // Units
+        if (units == "natural") {
+            double m = 1.0;
+            double k = 1.0;
+            double hbar = 1.0;
+            double omega = 1.0;
+        }
+        else { // units == 'mks'
+            double m = GSL_CONST_MKSA_MASS_ELECTRON;
+            // GSL_CONST_MKSA_MASS_PROTON
+            // GSL_CONST_MKSA_MASS_NEUTRON
 
-        p.V = (Vfunc == 'Q') ? &Params::qho : &Params::isw;
-        p.dV = (Vfunc == 'Q') ? &Params::d_qho : &Params::d_isw;
-        
-        const double xi = -0.5 * L;
-        const double xf = 0.5 * L;
-        double x_current = xi;
-        double x_next;
-        int status;
+            double k = 158.2;
+            /* k \approx \lambda \cdot 2 r_0
+            | Material | Configuration | Young's Modulus [GPa] | Atomic Radii [pm] | k [N/m] |
+            | -------- | ------------- | --------------------- | ----------------- | ------- |
+            | Mg       |               | 45                    | 150               | 13.5    |
+            | Al       |               | 69                    | 125               | 17.25   |
+            | Ti       |               | 110.3                 | 140               | 30.884  |
+            | Cu       |               | 117                   | 135               | 31.59   |
+            | Si       | (Crystal)     | 130-185               | 110               | 34.65   |
+            | Be       |               | 287                   | 105               | 60.27   |
+            | Mo       |               | 329-330               | 145               | 95.555  |
+            | W        |               | 400-410               | 135               | 109.35  |
+            | Os       |               | 525-562               | 130               | 141.31  |
+            | C        | (Graphene)    | 1050                  | 70                | 147     |
+            | C        | (Diamond)     | 1050-1210             | 70                | 158.2   |
+            | C        | (Carbyne)     | 32100                 | 70                | 294     |
+            */
+            double hbar = GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR;
+            double omega = sqrt(k / m);
+        }
 
-        psi0 = (psi0 == 0.0) ? DBL_EPSILON : psi0;
-        dpsi0 = (dpsi0 == 0.0) ? DBL_EPSILON : dpsi0;
+        // Potential
+        std::function<double(double)> V;
+        std::function<double(double)> dV;
+        assign_potential(V, dV, Vfunc);
 
-        double psi[2] = { psi0, dpsi0 };
-        double* psi_series = (double *)malloc(nsteps * sizeof(double));
-        double* psi2_series = (double*)malloc(nsteps * sizeof(double));
-        double* x_series = (double*)malloc(nsteps * sizeof(double));
+        // Domain
+        std::pair<double, double> domain = assign_domain(Vfunc, L);
+        const double xi = domain.first;
+        const double xf = domain.second;
+        double x = xi;
 
-        psi_series[0] = psi[0];
-        psi2_series[0] = pow(psi[0], 2.0);
-        x_series[0] = x_current;
+        // Initial Condition
+        state_t psi{ psi0, dpsi0 };
+        state_t dpsi_dx(2);
 
-        std::ofstream file("output.dat");
+        // Data Series
+        std::vector<double> psi_series;
+        std::vector<double> dpsi_series;
+        std::vector<double> x_series;
+        // Data Recorder
+        auto observer = [&](const state_t& psi, const double x) {
+            psi_series.push_back(psi[0]);
+            dpsi_series.push_back(psi[1]);
+            x_series.push_back(x);
+        };
+
+        // ODE System
+        std::function<void(const state_t&, state_t&, double)> sys = [&](const state_t& psi, state_t& dpsi_dx, const double x) {
+            dpsi_dx[0] = psi[1];
+            dpsi_dx[1] = (2.0 * m / pow(hbar, 2.0)) * (V(x) - E) * psi[0];
+        };
+
+        boost::numeric::odeint::integrate_const(rk4(), sys, psi, x, xf, h_0, observer);
+        //boost::numeric::odeint::integrate_adaptive(make_controlled(eps_abs, eps_rel, stepper_rkf78_t()), sys, psi, x, xf, h_0, observer);
+
+        std::vector<double> psi_series_copy(psi_series);
+        std::vector<double> dpsi_series_copy(dpsi_series);
+        std::vector<double> x_series_copy(x_series);
+
+        auto spline = boost::math::interpolators::cubic_hermite(std::move(x_series_copy), std::move(psi_series_copy), std::move(dpsi_series_copy));
+        double norm = sqrt(boost::math::quadrature::trapezoidal([&](double x) {return pow(spline(x), 2.0); }, xi, xf));
+
+        std::ofstream file(filename);
         file << "# E = " << E << "\n";
-        file << "# x, V(x), E + psi, E + |psi|^2\n";
+        file << "# x, V(x), psi, |psi|^2\n";
 
-        for (int i = 1; i < nsteps; i++)
-        {
-            x_next = xi + i * (xf - xi) / (nsteps - 1.0);
-
-            status = gsl_odeiv2_driver_apply(d, &x_current, x_next, psi);
-
-            if (status != GSL_SUCCESS)
-            {
-                std::cout << "Error!, return value = " << status << std::endl;
-                break;
-            }
-            
-            psi_series[i] = psi[0];
-            psi2_series[i] = pow(psi[0], 2.0);
-            x_series[i] = x_current;
+        for (size_t i = 0; i < x_series.size(); i++) {
+            psi_series[i] /= norm;
+            file << std::scientific << x_series[i] << " " << V(x_series[i]) << " " << psi_series[i] + E << " " << pow(psi_series[i], 2.0) + E << "\n";
         }
-
-        gsl_odeiv2_driver_free(d);
-
-
-        gsl_interp_accel* acc = gsl_interp_accel_alloc();
-        gsl_spline* spline = gsl_spline_alloc(gsl_interp_cspline, nsteps);
-        gsl_spline_init(spline, x_series, psi2_series, nsteps);
-
-        double normalization = gsl_spline_eval_integ(spline, xi, xf, acc);
-
-        gsl_spline_free(spline);
-        gsl_interp_accel_free(acc);
-
-        for (int i = 0; i < nsteps; i++)
-        {
-            file << std::scientific << x_series[i] << ", " << (p.*(p.V))(x_series[i]) << ", " << (&p)->E + psi_series[i] / sqrt(normalization) << ", " << (&p)->E + psi2_series[i] / normalization << "\n";
-        }
-
-        return 0;
-    }
+    };
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
+///\file Stationary-Quantum-EigenE.cpp
+///\author Ethan Knox
+///\date 8/2/2020.
+
+#include "pch.h"
+#include "framework.h"
+
+// TODO: This is an example of a library function
+void fnStationaryQuantumEigenE()
+{
+}
+
+#include <iostream>
+#include <fstream>
+#include <limits>
+#include <iomanip>
+#include <functional>
+
+#include <boost/numeric/odeint.hpp>
+#include <boost/math/tools/roots.hpp>
+
+#include "determine_domain_from_potential.h"
+
+using namespace std::placeholders;
+
+const double m = 1.0;
+const double k = 1.0;
+const double hbar = 1.0;
+const double omega = 1.0;
+
+typedef std::vector<double> state_t;
+typedef boost::numeric::odeint::runge_kutta_fehlberg78<state_t> stepper_rkf78_t;
+typedef boost::numeric::odeint::runge_kutta4<state_t> rk4;
+
+void TISE(state_t& psi, state_t& dpsi_dx, double x, std::function<double(double)> V, double E) {
+    dpsi_dx[0] = psi[1];
+    dpsi_dx[1] = (2.0 * m / pow(hbar, 2.0)) * (V(x) - E) * psi[0];
+}
+
+int eigenE_shooting(state_t& psi, double boundary_condition, std::string Vfunc, double L, double h_0, double eps_rel, double eps_abs, double E)
+{
+    // Potential
+    std::function<double(double)> V;
+    std::function<double(double)> dV;
+    if (Vfunc == "QHO") {
+        V = std::bind(quantum_harmonic_oscillator, _1, m, omega);
+        dV = std::bind(d_quantum_harmonic_oscillator, _1, m, omega);
+    }
+    else { // Vfunc == "ISW"
+        V = infinite_square_well;
+        dV = d_infinite_square_well;
+    }
+
+    // Domain
+    std::pair<double, double> domain = determine_domain_from_potential(Vfunc, L);
+    const double xi = domain.first;
+    const double xf = domain.second;
+    double x = xi;
+
+    // Initial Condition
+    state_t psi_copy(psi);
+    state_t dpsi_dx(2);
+    double h_0 = 1.0e-4;
+
+    std::function<double(double)> defect = [x, xf, h_0, psi_copy, &V](double E) {
+        boost::numeric::odeint::integrate_const(rk4(), std::bind(TISE, _1, _2, _3, V, E), psi_copy, x, xf, h_0);
+        return psi_copy[0];
+    };
+    boost::math::tools::eps_tolerance<double> tol;
+    std::pair<double, double> r = boost::math::tools::bisect(defect, 0.0, 10.0, tol);
+    return r.first + (r.second - r.first) / 2;
+}

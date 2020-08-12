@@ -2,6 +2,8 @@ set autoscale
 set xtic auto
 set ytic auto
 
+set grid
+
 set title "|psi|^2"
 set xlabel "x [Hartree]"
 set ylabel "|psi|^2"

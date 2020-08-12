@@ -1,7 +1,51 @@
 ﻿  Using triplet "x64-windows" from "C:\vcpkg\installed\x64-windows\"
+  determine_domain_from_potential.cpp
   Quantum-Mechanics.cpp
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 145 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  Quantum-Mechanics.vcxproj -> C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Release\Quantum-Mechanics.exe
+C:\vcpkg\installed\x64-windows\include\boost\numeric\odeint\integrate\max_step_checker.hpp(72,18): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\vcpkg\installed\x64-windows\include\boost\numeric\odeint\integrate\max_step_checker.hpp(104,18): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\vcpkg\installed\x64-windows\include\boost\math\interpolators\detail\cubic_hermite_detail.hpp(16,46): error C2429: language feature 'nested-namespace-definition' requires compiler flag '/std:c++17'
+C:\vcpkg\installed\x64-windows\include\boost\math\interpolators\cubic_hermite.hpp(12,38): error C2429: language feature 'nested-namespace-definition' requires compiler flag '/std:c++17'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(96,44): error C2679: binary '=': no operator found which takes a right-hand operand of type 'overloaded-function' (or there is no acceptable conversion)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1192,15): message : could be 'std::function<double (double)> &std::function<double (double)>::operator =(std::nullptr_t) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1167,15): message : or       'std::function<double (double)> &std::function<double (double)>::operator =(std::function<double (double)> &&) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1151,15): message : or       'std::function<double (double)> &std::function<double (double)>::operator =(const std::function<double (double)> &)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(96,44): message : while trying to match the argument list '(std::function<double (double)>, overloaded-function)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(97,47): error C2679: binary '=': no operator found which takes a right-hand operand of type 'overloaded-function' (or there is no acceptable conversion)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1192,15): message : could be 'std::function<double (double)> &std::function<double (double)>::operator =(std::nullptr_t) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1167,15): message : or       'std::function<double (double)> &std::function<double (double)>::operator =(std::function<double (double)> &&) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\functional(1151,15): message : or       'std::function<double (double)> &std::function<double (double)>::operator =(const std::function<double (double)> &)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(97,47): message : while trying to match the argument list '(std::function<double (double)>, overloaded-function)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(128,33): error C2065: 'm': undeclared identifier
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(128,41): error C2065: 'hbar': undeclared identifier
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(138,51): error C2955: 'boost::math::interpolators::cubic_hermite': use of class template requires template argument list
+C:\vcpkg\installed\x64-windows\include\boost\math\interpolators\cubic_hermite.hpp(15): message : see declaration of 'boost::math::interpolators::cubic_hermite'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(139,91): error C2064: term does not evaluate to a function taking 1 arguments
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(139,108): error C3536: 'spline': cannot be used before it is initialized
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(139,118): error C2665: 'sqrt': none of the 3 overloads could convert all the argument types
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\cmath(486,46): message : could be 'long double sqrt(long double) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\cmath(242,40): message : or       'float sqrt(float) noexcept'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_math.h(485,54): message : or       'double sqrt(double)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(139,118): message : while trying to match the argument list '(void)'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(194,18): error C2082: redefinition of formal parameter 'h_0'
+C:\Users\ethan\source\repos\Quantum-Mechanics\Quantum-Mechanics.cpp(202,20): warning C4244: 'return': conversion from '_Ty1' to 'int', possible loss of data
+          with
+          [
+              _Ty1=double
+          ]
+  shooting-method.cpp
+C:\vcpkg\installed\x64-windows\include\boost\numeric\odeint\integrate\max_step_checker.hpp(72,18): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\vcpkg\installed\x64-windows\include\boost\numeric\odeint\integrate\max_step_checker.hpp(104,18): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(19,14): error C2374: 'm': redefinition; multiple initialization
+C:\Users\ethan\source\repos\Quantum-Mechanics\potentials.h(9): message : see declaration of 'm'
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(20,14): error C2374: 'k': redefinition; multiple initialization
+C:\Users\ethan\source\repos\Quantum-Mechanics\potentials.h(10): message : see declaration of 'k'
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(21,14): error C2374: 'hbar': redefinition; multiple initialization
+C:\Users\ethan\source\repos\Quantum-Mechanics\potentials.h(11): message : see declaration of 'hbar'
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(22,14): error C2374: 'omega': redefinition; multiple initialization
+C:\Users\ethan\source\repos\Quantum-Mechanics\potentials.h(12): message : see declaration of 'omega'
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(56,18): error C2082: redefinition of formal parameter 'h_0'
+C:\Users\ethan\source\repos\Quantum-Mechanics\shooting-method.cpp(64,20): warning C4244: 'return': conversion from '_Ty1' to 'int', possible loss of data
+          with
+          [
+              _Ty1=double
+          ]

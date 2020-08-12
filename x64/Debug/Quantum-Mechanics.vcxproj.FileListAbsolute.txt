@@ -1,5 +1,0 @@
-C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Debug\Quantum-Mechanics.vcxproj.CopyComplete
-C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Debug\Quantum-Mechanics.exe
-C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Debug\Quantum-Mechanics.pdb
-C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Debug\gsld.dll
-C:\Users\ethan\source\repos\Quantum-Mechanics\x64\Debug\gslcblasd.dll

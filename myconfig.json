@@ -1,0 +1,12 @@
+{
+    "metadata": {
+        "title": "Example Title",
+        "author": "Ethan Knox",
+        "description": "A JSON file example"
+    },
+    "parameters": {
+        "xi": "0.0",
+        "xf": "1.0"
+    },
+
+}

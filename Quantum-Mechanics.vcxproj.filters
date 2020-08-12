@@ -18,6 +18,12 @@
     <ClCompile Include="Quantum-Mechanics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="determine_domain_from_potential.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shooting-method.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\gslcblasd.dll" />
@@ -32,5 +38,10 @@
     <None Include="x64\Release\gsl.dll" />
     <None Include="x64\Release\gslcblas.dll" />
     <None Include="x64\Release\Quantum-Mechanics.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="determine_domain_from_potential.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

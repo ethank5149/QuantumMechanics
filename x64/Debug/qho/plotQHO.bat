@@ -1,0 +1,1 @@
+gnuplot && load 'QHO.gnuplot'
